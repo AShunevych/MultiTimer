@@ -3,7 +3,7 @@ package com.ashunevich.multitimer.Util
 import android.content.Context
 import com.ashunevich.multitimer.TimerFragment
 
-class prefUtil {
+class PrefUtil {
     companion object{
         fun getTimerlength(context: Context):Int{
             return 1
@@ -57,6 +57,23 @@ class prefUtil {
             editor.putLong(SECONDS_REMAINING,seconds)
             editor.apply()
         }
+
+        private const val ALARM_SET_TIME = "Timer.background_item"
+
+        fun getAlarmSetTime(context: Context):Long{
+            val preferences =  androidx.preference.PreferenceManager.
+            getDefaultSharedPreferences(context)
+            return preferences.getLong(ALARM_SET_TIME,0)
+        }
+
+        fun setAlarmSetTime(time:Long,context: Context){
+            val editor = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context).
+            edit();
+             editor.putLong(ALARM_SET_TIME,time)
+            editor.apply()
+        }
+
+
 
     }
 }

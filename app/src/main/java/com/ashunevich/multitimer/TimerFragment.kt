@@ -1,16 +1,44 @@
 package com.ashunevich.multitimer
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.ashunevich.multitimer.Util.prefUtil
+import com.ashunevich.multitimer.Util.NotificationUtil
+import com.ashunevich.multitimer.Util.PrefUtil
 import com.ashunevich.multitimer.databinding.TimerFragBinding
+import java.util.*
 
 class TimerFragment : Fragment() {
 
+    companion object{
+        fun setAlarm (context:Context,nowSeconds:Long,secondsRemaining:Long):Long{
+           val wakeMeUp = (nowSeconds+secondsRemaining)*1000
+           val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(context,ExpiredTime::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(context,0,intent,0)
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP,wakeMeUp,pendingIntent)
+           PrefUtil.setAlarmSetTime(nowSeconds,context)
+           return wakeMeUp
+        }
+
+        fun removeAlarm(context:Context){
+            val intent = Intent(context,ExpiredTime::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(context,0,intent,0)
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.cancel(pendingIntent)
+            PrefUtil.setAlarmSetTime(0, context)
+        }
+
+        val nowSeconds:Long get() = Calendar.getInstance().timeInMillis / 1000
+    }
 
     enum class TimerState{
         Stopped,Paused,Running
@@ -24,7 +52,6 @@ class TimerFragment : Fragment() {
     private val binding get() = _binding
 
 
-
     fun newInstance():TimerFragment{
         return TimerFragment()
     }
@@ -34,6 +61,8 @@ class TimerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         initTimer()
+        removeAlarm(requireContext())
+        NotificationUtil.hideTimerNotification(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -47,26 +76,34 @@ class TimerFragment : Fragment() {
     override fun onPause() {
         super.onPause()
 
-        if (timerState==TimerState.Running){timer.cancel()}
-        else if (timerState==TimerState.Paused){}
+        if (timerState==TimerState.Running){timer.cancel()
+        val wakeUp = setAlarm(requireContext(), nowSeconds,secondsRemain)
+            NotificationUtil.showTimerRunning(requireContext(), wakeUp)}
+        else if (timerState==TimerState.Paused) {
+            NotificationUtil.showTimerPaused(requireContext())
+        }
 
-         prefUtil.setPrevTimerLenghtSec(timerLenghtSeconds, requireContext())
-         prefUtil.setSecRemaining(secondsRemain, requireContext())
-        prefUtil.setTimerState(timerState, requireContext())
+         PrefUtil.setPrevTimerLenghtSec(timerLenghtSeconds, requireContext())
+         PrefUtil.setSecRemaining(secondsRemain, requireContext())
+        PrefUtil.setTimerState(timerState, requireContext())
     }
 
     private fun initTimer(){
-        timerState = prefUtil.getTimerState(requireContext())
+        timerState = PrefUtil.getTimerState(requireContext())
 
         if (timerState==TimerState.Stopped)
             setNewTimerLength()
         else
             setPrevioustimerLength()
 
-        secondsRemain = if (timerState ==TimerState.Running||timerState==TimerState.Paused) prefUtil.getSecRemaining(requireContext())
+        secondsRemain = if (timerState ==TimerState.Running||timerState==TimerState.Paused) PrefUtil.getSecRemaining(requireContext())
         else
             timerLenghtSeconds
 
+        val alarmSetTime = PrefUtil.getAlarmSetTime(requireContext())
+        if (alarmSetTime>0) secondsRemain -= nowSeconds- alarmSetTime
+
+        if(secondsRemain <=0 ) onTimerFinished()
         if (timerState == TimerState.Running)
             startTimer()
 
@@ -79,7 +116,7 @@ class TimerFragment : Fragment() {
         setNewTimerLength()
 
         binding?.progressCountdown?.progress = 0
-        prefUtil.setSecRemaining(timerLenghtSeconds,requireContext())
+        PrefUtil.setSecRemaining(timerLenghtSeconds,requireContext())
         secondsRemain=timerLenghtSeconds
         updateButtons()
         updateCountdownUI()
@@ -97,22 +134,23 @@ class TimerFragment : Fragment() {
     }
 
     private fun setNewTimerLength(){
-        val lengthInMinutes = prefUtil.getTimerlength(requireContext())
+        val lengthInMinutes = PrefUtil.getTimerlength(requireContext())
         timerLenghtSeconds = (lengthInMinutes*60L)
         binding?.progressCountdown?.max = timerLenghtSeconds.toInt()
     }
 
     private fun setPrevioustimerLength(){
-        timerLenghtSeconds = prefUtil.getPrevTimerLenghtSec(requireContext())
+        timerLenghtSeconds = PrefUtil.getPrevTimerLenghtSec(requireContext())
         binding?.progressCountdown?.max = timerLenghtSeconds.toInt()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateCountdownUI(){
         val minusUntilFinished = secondsRemain/60
         val secondsInMinutesRemaining = secondsRemain - minusUntilFinished*60
         val secondsSrt = secondsInMinutesRemaining.toString()
         binding?.countDown?.text  = "$minusUntilFinished:${
-        if (secondsSrt.length==2)secondsSrt else "0"+secondsSrt}"
+        if (secondsSrt.length==2)secondsSrt else "0$secondsSrt"}"
         binding?.progressCountdown?.progress = (timerLenghtSeconds-secondsRemain).toInt()
     }
 
