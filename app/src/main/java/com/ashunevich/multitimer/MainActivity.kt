@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun init(){
          binding.viewPagerActivity.adapter = PageAdapter(supportFragmentManager,lifecycle)
-        val names:ArrayList<String> = arrayListOf("Timer","Stopwatch")
+        val names:ArrayList<String> = arrayListOf("Timer","Chronometer")
         TabLayoutMediator(binding.tabLayout,binding.viewPagerActivity){
             tab, position ->  tab.text = names[position]
         }.attach()
