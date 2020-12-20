@@ -10,8 +10,6 @@ import android.graphics.Color
 import android.media.RingtoneManager
 import android.net.Uri
 import androidx.core.app.NotificationCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.ashunevich.multitimer.*
 import java.text.SimpleDateFormat
 import java.util.*
