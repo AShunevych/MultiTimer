@@ -9,33 +9,38 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MultiTimer">
-        <receiver
-            android:name=".TImerNotificatinReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name = "stop"/>
-                <action android:name = "pause"/>
-                <action android:name = "start"/>
-                <action android:name = "resume"/>
-            </intent-filter>
 
-        </receiver>
-        <activity android:name="com.ashunevich.multitimer.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.MultiTimer">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
+        <receiver
+            android:name=".TImerNotificatinReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="stop" />
+                <action android:name="pause" />
+                <action android:name="start" />
+                <action android:name="resume" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".ExpiredTime"
             android:enabled="true"
             android:exported="false" />
     </application>
-
-
 
 </manifest>
