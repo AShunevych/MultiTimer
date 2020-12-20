@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabStart_Pause"
@@ -15,7 +16,8 @@
         app:layout_constraintEnd_toStartOf="@+id/fabInterval_Clear"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_play" />
+        app:srcCompat="@drawable/ic_play"
+        tools:ignore="ContentDescription" />
 
     <Chronometer
         android:id="@+id/totalChronometre"
@@ -59,7 +61,8 @@
         app:layout_constraintStart_toEndOf="@+id/fabStart_Pause"
         app:layout_constraintTop_toTopOf="@+id/fabStart_Pause"
         app:layout_constraintVertical_bias="0.522"
-        app:srcCompat="@drawable/ic_interval" />
+        app:srcCompat="@drawable/ic_interval"
+        tools:ignore="ContentDescription"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/intervalView"

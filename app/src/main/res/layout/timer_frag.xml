@@ -16,7 +16,8 @@
         app:layout_constraintEnd_toStartOf="@+id/pauseButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/stopButton"
-        app:srcCompat="@drawable/ic_play" />
+        app:srcCompat="@drawable/ic_play"
+        tools:ignore="HardcodedText" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/stopButton"
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:contentDescription="Stop"
+        tools:ignore="HardcodedText"
         app:layout_constraintEnd_toStartOf="@+id/startButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +38,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:contentDescription="Pause"
+        tools:ignore="HardcodedText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/startButton"

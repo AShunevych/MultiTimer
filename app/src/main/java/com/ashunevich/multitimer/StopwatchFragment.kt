@@ -35,8 +35,7 @@ class StopwatchFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         _binding = StopwatchFragBinding.inflate(inflater, container, false)
         binding?.totalChronometre?.format =format
-        binding?.currentInterval?.visibility =View.GONE
-        setVisibility(true)
+        setVisibility(false)
         initButton()
         return binding?.root
     }
@@ -46,41 +45,14 @@ class StopwatchFragment : Fragment() {
         adapter = StopwatchRecycleViewAdapter(listContentArr)
         binding?.intervalView?.layoutManager = LinearLayoutManager(activity)
         binding?.intervalView?.setHasFixedSize(true)
-        binding?.intervalView?.layoutManager = LinearLayoutManager(activity)
-
                 binding?.intervalView?.adapter = adapter
     }
 
-// (TODO) refactor this code
-
     private fun initButton() {
         binding?.fabStartPause?.setOnClickListener {
-            if (timerState == ChronometerState.Stopped) {
-                timerState = ChronometerState.Running
-                binding?.currentInterval?.visibility =View.VISIBLE
-                binding?.totalChronometre?.base = SystemClock.elapsedRealtime()
-                binding?.currentInterval?.base = SystemClock.elapsedRealtime()
-                binding?.totalChronometre?.start()
-                binding?.currentInterval?.start()
-                binding?.fabStartPause?.setImageResource(R.drawable.ic_pause)
-                binding?.fabIntervalClear?.setImageResource(R.drawable.ic_interval)
-                setVisibility(false)
-            } else if (timerState == ChronometerState.Running) {
-                binding?.totalChronometre?.stop()
-                binding?.currentInterval?.stop()
-                timerState = ChronometerState.Paused
-                elapse = (SystemClock.elapsedRealtime() - binding?.totalChronometre?.base!!).toInt()
-                elapseInterwal = (SystemClock.elapsedRealtime() - binding?.currentInterval?.base!!).toInt()
-                binding?.fabStartPause?.setImageResource(R.drawable.ic_play)
-                binding?.fabIntervalClear?.setImageResource(R.drawable.ic_clear)
-            } else if (timerState == ChronometerState.Paused) {
-                timerState = ChronometerState.Running
-                binding?.totalChronometre?.base = SystemClock.elapsedRealtime() - elapse
-                binding?.currentInterval?.base = SystemClock.elapsedRealtime() - elapseInterwal
-                binding?.totalChronometre?.start()
-                binding?.currentInterval?.start()
-                binding?.fabStartPause?.setImageResource(R.drawable.ic_pause)
-                binding?.fabIntervalClear?.setImageResource(R.drawable.ic_interval)
+            when(timerState){
+                 ChronometerState.Stopped , ChronometerState.Paused  -> startTimer()
+                ChronometerState.Running -> pauseTimer()
             }
         }
             _binding?.fabIntervalClear?.setOnClickListener {
@@ -90,9 +62,35 @@ class StopwatchFragment : Fragment() {
                 else if (timerState == ChronometerState.Paused){
                     clearRecyclerView ()
                 }
-
             }
         }
+
+    private fun startTimer(){
+            setVisibility(true)
+        if(timerState==ChronometerState.Stopped){
+            binding?.totalChronometre?.base = SystemClock.elapsedRealtime()
+            binding?.currentInterval?.base = SystemClock.elapsedRealtime()
+        }
+        else if (timerState==ChronometerState.Paused){
+            binding?.totalChronometre?.base = SystemClock.elapsedRealtime()- elapse
+            binding?.currentInterval?.base = SystemClock.elapsedRealtime()- elapseInterwal
+        }
+            binding?.totalChronometre?.start()
+            binding?.currentInterval?.start()
+            binding?.fabStartPause?.setImageResource(R.drawable.ic_pause)
+            binding?.fabIntervalClear?.setImageResource(R.drawable.ic_interval)
+        timerState = ChronometerState.Running
+    }
+
+    private fun pauseTimer(){
+        binding?.totalChronometre?.stop()
+        binding?.currentInterval?.stop()
+        timerState = ChronometerState.Paused
+        elapse = (SystemClock.elapsedRealtime() - binding?.totalChronometre?.base!!).toInt()
+        elapseInterwal = (SystemClock.elapsedRealtime() - binding?.currentInterval?.base!!).toInt()
+        binding?.fabStartPause?.setImageResource(R.drawable.ic_play)
+        binding?.fabIntervalClear?.setImageResource(R.drawable.ic_clear)
+    }
 
     private fun clearRecyclerView (){
         listContentArr.clear()
@@ -101,8 +99,7 @@ class StopwatchFragment : Fragment() {
         binding?.currentInterval?.base = SystemClock.elapsedRealtime()
         binding?.totalChronometre?.stop()
         binding?.currentInterval?.stop()
-        binding?.currentInterval?.visibility = View.GONE
-        binding?.fabIntervalClear?.visibility= View.GONE
+        setVisibility(false)
         timerState = ChronometerState.Stopped
     }
 
@@ -134,12 +131,14 @@ class StopwatchFragment : Fragment() {
 
     private fun setVisibility (boolean: Boolean){
       if(boolean){
-          binding?.fabIntervalClear?.visibility = View.GONE
-          binding?.fabIntervalClear?.isClickable = false
-        }
-        else{
           binding?.fabIntervalClear?.visibility = View.VISIBLE
           binding?.fabIntervalClear?.isClickable = true
+          binding?.currentInterval?.visibility =View.VISIBLE
+        }
+        else{
+          binding?.fabIntervalClear?.visibility = View.GONE
+          binding?.fabIntervalClear?.isClickable = false
+          binding?.currentInterval?.visibility =View.GONE
       }
     }
     
