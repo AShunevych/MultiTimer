@@ -1,5 +1,6 @@
 package com.ashunevich.multitimer.Util
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -20,6 +21,7 @@ class NotificationUtil {
         private const val CHANNEL_NAME_TIMER = "Timer App Timer "
         private const val TIMER_ID = 0
 
+        @SuppressLint("UnspecifiedImmutableFlag")
         fun showTimerExpired(context: Context){
             val startIntent  = Intent(context,TImerNotificatinReceiver::class.java)
             startIntent.action = AppConstants.ACTION_START
@@ -59,6 +61,7 @@ class NotificationUtil {
             nManager.notify(TIMER_ID,nBuilder.build())
         }
 
+        @SuppressLint("UnspecifiedImmutableFlag")
         fun showTimerPaused(context: Context){
             val resumeTimer  = Intent(context,TImerNotificatinReceiver::class.java)
             resumeTimer.action = AppConstants.ACTION_RESUME

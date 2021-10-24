@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.ashunevich.multitimer.Util.NotificationUtil
-import com.ashunevich.multitimer.Util.PrefUtil
+import com.ashunevich.multitimer.util.PrefUtil
 
 class TImerNotificatinReceiver : BroadcastReceiver() {
 

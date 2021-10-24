@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.ashunevich.multitimer.Util.NotificationUtil
-import com.ashunevich.multitimer.Util.PrefUtil
+import com.ashunevich.multitimer.util.PrefUtil
 import com.ashunevich.multitimer.databinding.TimerFragBinding
 import java.util.*
 
